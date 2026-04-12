@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package search;
+
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/Karambollla/course/proto/search";
+
+message SearchRequest {
+  string words = 1;
+  int32 limit = 2;
+}
+
+message Comic {
+  int32 id = 1;
+  string url = 2;
+}
+
+message SearchReply {
+  repeated Comic comics = 1;
+  int32 total = 2;
+}
+
+service Search {
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {}
+  rpc Search(SearchRequest) returns (SearchReply) {}
+  rpc SearchIndex(SearchRequest) returns (SearchReply) {}
+  rpc Rebuild(google.protobuf.Empty) returns (google.protobuf.Empty) {}
+}
