@@ -1,12 +1,12 @@
 package aaa
 
 import (
-	"errors"
 	"fmt"
 	"log/slog"
 	"os"
 	"time"
 
+	"github.com/Karambollla/course/api/core"
 	jwt "github.com/golang-jwt/jwt"
 )
 
@@ -41,7 +41,7 @@ func New(tokenTTL time.Duration, log *slog.Logger) (AAA, error) {
 
 func (a AAA) Login(name, password string) (string, error) {
 	if pass, ok := a.users[name]; !ok || pass != password {
-		return "", errors.New("invalid credentials")
+		return "", core.ErrInvalidCredentials
 	}
 	claims := jwt.StandardClaims{
 		Subject:   adminRole,
@@ -54,26 +54,36 @@ func (a AAA) Login(name, password string) (string, error) {
 func (a AAA) Verify(tokenString string) error {
 	token, err := jwt.ParseWithClaims(tokenString, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors.New("invalid token")
+			return nil, core.ErrInvalidToken
 		}
+
+		if token.Method.Alg() != jwt.SigningMethodHS256.Alg() {
+			a.log.Error("unsupported HMAC algorithm", "alg", token.Method.Alg())
+			return nil, core.ErrInvalidToken
+		}
+
 		return []byte(secretKey), nil
 	})
 
 	if err != nil {
-		return errors.New("invalid token")
+		a.log.Error("failed to parse token", "error", err)
+		return err
 	}
 
 	claims, ok := token.Claims.(*jwt.StandardClaims)
 	if !ok || !token.Valid {
-		return errors.New("invalid token claims")
+		a.log.Error("invalid token claims")
+		return core.ErrInvalidToken
 	}
 
 	if claims.Subject != adminRole {
-		return errors.New("unknown role")
+		a.log.Error("unknown role in token", "role", claims.Subject)
+		return core.ErrUnknownRole
 	}
 
 	if claims.ExpiresAt < time.Now().Unix() {
-		return errors.New("token expired")
+		a.log.Error("token expired at", "expiresAt", claims.ExpiresAt)
+		return core.ErrTokenExpired
 	}
 
 	return nil
