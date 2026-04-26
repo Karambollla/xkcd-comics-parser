@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io"
 	"log/slog"
 	"net"
 	"os"
@@ -11,6 +12,7 @@ import (
 
 	updatepb "github.com/Karambollla/course/proto/update"
 	"github.com/Karambollla/course/update/adapters/db"
+	"github.com/Karambollla/course/update/adapters/events"
 	updategrpc "github.com/Karambollla/course/update/adapters/grpc"
 	"github.com/Karambollla/course/update/adapters/words"
 	"github.com/Karambollla/course/update/adapters/xkcd"
@@ -19,6 +21,12 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
+
+func CloseOrLog(c io.Closer, log *slog.Logger) {
+	if err := c.Close(); err != nil {
+		log.Error("failed to close resource", "error", err)
+	}
+}
 
 func main() {
 
@@ -62,8 +70,15 @@ func run(cfg config.Config, log *slog.Logger) error {
 		return fmt.Errorf("failed create Words client: %v", err)
 	}
 
+	// broker adapter
+	publisher, err := events.NewPublisher(cfg.BrokerAddress, log)
+	if err != nil {
+		log.Warn("failed to create nats connection, continuing without broker", "error", err)
+		publisher = nil
+	}
+
 	// service
-	updater, err := core.NewService(log, storage, xkcd, words, cfg.XKCD.Concurrency)
+	updater, err := core.NewService(log, storage, xkcd, words, cfg.XKCD.Concurrency, publisher)
 	if err != nil {
 		return fmt.Errorf("failed create Update service: %v", err)
 	}
@@ -81,6 +96,10 @@ func run(cfg config.Config, log *slog.Logger) error {
 	// context for Ctrl-C
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
+	if publisher != nil {
+		defer CloseOrLog(publisher, log)
+	}
+	defer CloseOrLog(words, log)
 
 	go func() {
 		<-ctx.Done()

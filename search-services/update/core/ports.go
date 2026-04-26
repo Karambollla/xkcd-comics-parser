@@ -26,3 +26,8 @@ type XKCD interface {
 type Words interface {
 	Norm(ctx context.Context, phrase string) ([]string, error)
 }
+
+type EventPublisher interface {
+	PublishUpdated(ctx context.Context) error
+	PublishDropped(ctx context.Context) error
+}
