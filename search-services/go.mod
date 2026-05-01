@@ -4,10 +4,10 @@ go 1.25.1
 
 require (
 	github.com/VictoriaMetrics/metrics v1.43.1
-	github.com/felixge/httpsnoop v1.0.4
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/lib/pq v1.10.9
 	github.com/nats-io/nats.go v1.51.0
+	github.com/stretchr/testify v1.11.1
 	go.uber.org/ratelimit v0.3.1
 	google.golang.org/grpc v1.69.2
 	google.golang.org/protobuf v1.35.1
@@ -16,6 +16,7 @@ require (
 require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
 	github.com/benbjohnson/clock v1.3.0 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
@@ -31,6 +32,7 @@ require (
 	github.com/klauspost/compress v1.18.5 // indirect
 	github.com/nats-io/nkeys v0.4.15 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/valyala/fastrand v1.1.0 // indirect
 	github.com/valyala/histogram v1.2.0 // indirect
 	go.uber.org/atomic v1.7.0 // indirect

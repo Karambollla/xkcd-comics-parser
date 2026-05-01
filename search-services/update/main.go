@@ -73,8 +73,8 @@ func run(cfg config.Config, log *slog.Logger) error {
 	// broker adapter
 	publisher, err := events.NewPublisher(cfg.BrokerAddress, log)
 	if err != nil {
-		log.Warn("failed to create nats connection, continuing without broker", "error", err)
-		publisher = nil
+		log.Error("error nats", "error", err)
+		return fmt.Errorf("failed to create nats connection : %v", err)
 	}
 
 	// service
@@ -96,9 +96,7 @@ func run(cfg config.Config, log *slog.Logger) error {
 	// context for Ctrl-C
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
-	if publisher != nil {
-		defer CloseOrLog(publisher, log)
-	}
+	defer CloseOrLog(publisher, log)
 	defer CloseOrLog(words, log)
 
 	go func() {

@@ -15,8 +15,14 @@ const (
 	flushTimeout   = 2 * time.Second
 )
 
+type natsConn interface {
+	Publish(subject string, data []byte) error
+	FlushTimeout(timeout time.Duration) error
+	Close()
+}
+
 type Publisher struct {
-	nc  *nats.Conn
+	nc  natsConn
 	log *slog.Logger
 }
 
@@ -67,7 +73,5 @@ func (p *Publisher) Close() error {
 		p.log.Info("nats closed")
 		return nil
 	}
-	err := p.nc.Flush() // mb tak
-	p.nc.Close()
-	return err
+	return nil
 }

@@ -30,6 +30,9 @@ func NewService(
 	if concurrency < 1 {
 		return nil, fmt.Errorf("wrong concurrency specified: %d", concurrency)
 	}
+	if publisher == nil {
+		return nil, fmt.Errorf("event publisher must not be nil")
+	}
 	return &Service{
 		log:         log,
 		db:          db,
@@ -159,10 +162,8 @@ func (s *Service) Update(ctx context.Context) error {
 		}
 	}
 	if firstError == nil {
-		if s.publisher != nil {
-			if err := s.publisher.PublishUpdated(ctx); err != nil {
-				s.log.Warn("failed to publish update event", "error", err)
-			}
+		if err := s.publisher.PublishUpdated(ctx); err != nil {
+			return ErrFailedPublish
 		}
 		s.log.Info("Update finished successfully")
 	}
@@ -206,10 +207,8 @@ func (s *Service) Drop(ctx context.Context) error {
 		return err
 	}
 
-	if s.publisher != nil {
-		if err := s.publisher.PublishDropped(ctx); err != nil {
-			s.log.Warn("failed to publish drop event", "error", err)
-		}
+	if err := s.publisher.PublishDropped(ctx); err != nil {
+		return ErrFailedPublish
 	}
 
 	s.log.Info("DB dropped successfully")

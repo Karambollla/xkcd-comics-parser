@@ -28,6 +28,10 @@ lint:
 proto:
 	make -C search-services protobuf
 
+unit:
+	make -C search-services test
+	mv search-services/cover.html .
+
 tools:
 	go install github.com/yoheimuta/protolint/cmd/protolint@latest
 	go install golang.org/x/tools/cmd/goimports@latest

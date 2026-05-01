@@ -75,6 +75,12 @@ func (i *Index) Search(ctx context.Context, tokens []string, limit int) ([]core.
 	if total == 0 {
 		return nil, 0, nil
 	}
+	if limit > total {
+		limit = total
+	}
+	if limit <= 0 {
+		return nil, total, nil
+	}
 
 	type item struct {
 		id    int

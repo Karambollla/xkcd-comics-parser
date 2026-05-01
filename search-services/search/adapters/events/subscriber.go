@@ -15,9 +15,19 @@ type Rebuilder interface {
 	Rebuild(ctx context.Context) error
 }
 
+type natsConn interface {
+	Drain() error
+	Close()
+}
+
+type natsSubscription interface {
+	NextMsgWithContext(ctx context.Context) (*nats.Msg, error)
+	Unsubscribe() error
+}
+
 type Subscriber struct {
-	nc        *nats.Conn
-	sub       *nats.Subscription
+	nc        natsConn
+	sub       natsSubscription
 	rebuilder Rebuilder
 	log       *slog.Logger
 }

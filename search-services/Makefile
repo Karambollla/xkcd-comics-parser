@@ -16,3 +16,8 @@ protolint:
 
 golint:
 	golangci-lint run -E gocritic -v ./...
+
+test:
+	go test -race -coverprofile cover.out \
+		$(shell go list ./... | egrep -v 'yadro.com/course/(proto|api$$|update$$|words$$|search$$)')
+	go tool cover -html cover.out -o cover.html
