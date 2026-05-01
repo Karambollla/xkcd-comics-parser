@@ -2,4 +2,5 @@ log_level: DEBUG
 words_address: localhost:82
 search_address: localhost:83
 db_address: localhost:1234
-TTL: 20s
+broker_address: nats://localhost:4222
+TTL: 86400s

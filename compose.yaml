@@ -57,10 +57,13 @@ services:
       - XKCD_URL=https://xkcd.com
       - XKCD_CONCURRENCY=10
       - WORDS_ADDRESS=words:8080
+      - BROKER_ADDRESS=nats://nats:4222
     depends_on:
       postgres:
         condition: service_healthy
       words:
+        condition: service_started
+      nats:
         condition: service_started
 
   search:
@@ -78,12 +81,15 @@ services:
       - SEARCH_ADDRESS=:8080
       - WORDS_ADDRESS=words:8080
       - DB_ADDRESS=postgres://postgres:password@postgres:5432/postgres
+      - BROKER_ADDRESS=nats://nats:4222
     depends_on:
       postgres:
         condition: service_healthy
       words:
         condition: service_started
       update:
+        condition: service_started
+      nats:
         condition: service_started
 
   tests:
@@ -124,6 +130,12 @@ services:
       - pgadmin:/var/lib/pgadmin
     depends_on:
       - postgres
+
+  nats:
+    image: nats
+    container_name: nats
+    ports:
+      - "4222:4222"
 
   victoriametrics:
     image: victoriametrics/victoria-metrics:v1.125.0

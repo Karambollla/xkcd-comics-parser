@@ -14,6 +14,7 @@ type Service struct {
 	db          DB
 	xkcd        XKCD
 	words       Words
+	publisher   EventPublisher
 	concurrency int
 	mu          sync.Mutex
 	status      ServiceStatus
@@ -24,16 +25,20 @@ const failedComicURL = "https://xkcd.com/404/"
 const failedComicText = "404 not found"
 
 func NewService(
-	log *slog.Logger, db DB, xkcd XKCD, words Words, concurrency int,
+	log *slog.Logger, db DB, xkcd XKCD, words Words, concurrency int, publisher EventPublisher,
 ) (*Service, error) {
 	if concurrency < 1 {
 		return nil, fmt.Errorf("wrong concurrency specified: %d", concurrency)
+	}
+	if publisher == nil {
+		return nil, fmt.Errorf("event publisher must not be nil")
 	}
 	return &Service{
 		log:         log,
 		db:          db,
 		xkcd:        xkcd,
 		words:       words,
+		publisher:   publisher,
 		concurrency: concurrency,
 		status:      StatusIdle,
 	}, nil
@@ -156,6 +161,12 @@ func (s *Service) Update(ctx context.Context) error {
 			firstError = err
 		}
 	}
+	if firstError == nil {
+		if err := s.publisher.PublishUpdated(ctx); err != nil {
+			return ErrFailedPublish
+		}
+		s.log.Info("Update finished successfully")
+	}
 	return firstError
 }
 
@@ -192,5 +203,14 @@ func (s *Service) Drop(ctx context.Context) error {
 	}
 
 	err := s.db.Drop(ctx)
-	return err
+	if err != nil {
+		return err
+	}
+
+	if err := s.publisher.PublishDropped(ctx); err != nil {
+		return ErrFailedPublish
+	}
+
+	s.log.Info("DB dropped successfully")
+	return nil
 }

@@ -15,6 +15,7 @@ import (
 
 	searchpb "github.com/Karambollla/course/proto/search"
 	"github.com/Karambollla/course/search/adapters/db"
+	"github.com/Karambollla/course/search/adapters/events"
 	searchgrpc "github.com/Karambollla/course/search/adapters/grpc"
 	"github.com/Karambollla/course/search/adapters/index"
 	"github.com/Karambollla/course/search/adapters/initiator"
@@ -60,6 +61,12 @@ func run(cfg config.Config, log *slog.Logger) error {
 		return fmt.Errorf("failed to create service: %w", err)
 	}
 
+	// events subscriber
+	subscriber, err := events.NewSubscriber(cfg.BrokerAddress, svc, log)
+	if err != nil {
+		log.Warn("failed to create events subscriber, continuing without broker", "error", err)
+	}
+
 	// gRPC server
 	s := grpc.NewServer()
 	searchpb.RegisterSearchServer(s, searchgrpc.NewServer(svc))
@@ -70,7 +77,13 @@ func run(cfg config.Config, log *slog.Logger) error {
 	defer CloseOrLog(words)
 	defer CloseOrLog(db)
 	defer func() { _ = idx.Close() }()
+	if subscriber != nil {
+		defer CloseOrLog(subscriber)
+	}
 	go initiator.Start(ctx)
+	if subscriber != nil {
+		go subscriber.Start(ctx)
+	}
 	go func() {
 		<-ctx.Done()
 		log.Debug("shutting down gRPC server")

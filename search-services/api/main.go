@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"flag"
+	"io"
 	"log/slog"
 	"net"
 	"net/http"
@@ -19,6 +20,12 @@ import (
 	"github.com/Karambollla/course/api/config"
 	"github.com/Karambollla/course/api/core"
 )
+
+func CloseOrLog(c io.Closer, log *slog.Logger) {
+	if err := c.Close(); err != nil {
+		log.Error("failed to close resource", "error", err)
+	}
+}
 
 func main() {
 	var configPath string
@@ -87,6 +94,9 @@ func main() {
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
+	defer CloseOrLog(updateClient, log)
+	defer CloseOrLog(searchClient, log)
+	defer CloseOrLog(wordsClient, log)
 
 	server := http.Server{
 		Addr:        cfg.HTTPConfig.Address,
