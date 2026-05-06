@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{.Title}}</title>
+  <link rel="stylesheet" href="/static/app.css">
+  <style>
+    :root{
+      --bg: #F5F2ED;
+      --bg-soft: #F9F8F5;
+      --card: #FFFFFF;
+      --border: #E0DED7;
+      --text: #343541;
+      --muted: #7D7C75;
+      --accent: #F07E5C;
+      --accent-2: #425B95;
+      --shadow: 0 12px 30px rgba(31, 28, 22, 0.08);
+      --radius-xl: 24px;
+      --radius-lg: 18px;
+    }
+
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg-soft),var(--bg));color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.14;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220"><filter id="g"><feTurbulence type="fractalNoise" baseFrequency="0.82" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23g)" opacity="0.5"/></svg>')}
+    .shell{max-width:1200px;margin:0 auto;padding:28px 24px 48px;position:relative;z-index:1}
+
+    .dock{position:sticky;top:18px;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 16px;border-radius:999px;background:rgba(255,255,255,.72);backdrop-filter:blur(18px);border:1px solid rgba(224,222,215,.9);box-shadow:var(--shadow)}
+    .brand{display:flex;flex-direction:column;gap:2px}
+    .brand strong{font-size:16px;letter-spacing:.01em}
+    .brand span{font-size:12px;color:var(--muted)}
+    .segmented{display:inline-flex;align-items:center;padding:4px;border-radius:999px;background:var(--bg-soft);border:1px solid var(--border);gap:4px}
+    .segmented a{min-height:44px;display:inline-flex;align-items:center;justify-content:center;padding:0 16px;border-radius:999px;color:var(--muted);text-decoration:none;font-weight:600;transition:all .18s ease}
+    .segmented a.active{background:var(--card);color:var(--text);box-shadow:0 6px 16px rgba(31,28,22,.06)}
+
+    .hero{display:flex;align-items:center;justify-content:center;min-height:56vh;padding:36px 0 16px}
+    .login-card{width:min(560px,100%);background:var(--card);border:1px solid var(--border);border-radius:28px;box-shadow:var(--shadow);padding:40px}
+    .login-kicker{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+    .login-title{margin:0;font-size:40px;line-height:1.06;color:var(--text)}
+    .login-sub{margin:12px 0 28px;color:var(--muted);max-width:36ch;line-height:1.6}
+
+    .field{margin-bottom:16px}
+    .field label{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+    .field input{width:100%;box-sizing:border-box;min-height:52px;padding:0 16px;border-radius:14px;background:#fff;border:1px solid var(--border);color:var(--text);font-size:15px;transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease}
+    .field input::placeholder{color:#b5b2a9}
+    .field input:focus{outline:none;border-color:rgba(64,91,149,.32);box-shadow:0 0 0 4px rgba(64,91,149,.08)}
+
+    .login-actions{display:flex;justify-content:flex-end;margin-top:8px}
+    .btn-primary{min-height:44px;display:inline-flex;align-items:center;justify-content:center;padding:0 18px;border:none;border-radius:14px;background:var(--accent);color:#fff;font-weight:700;box-shadow:0 10px 22px rgba(240,126,92,.18);cursor:pointer;transition:transform .18s ease,box-shadow .18s ease}
+    .btn-primary:hover{transform:translateY(-1px);box-shadow:0 12px 26px rgba(240,126,92,.22)}
+    .btn-primary--secondary{background:var(--accent-2)}
+
+    .dashboard{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;margin-top:24px}
+    .dashboard-head{grid-column:span 12;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:8px}
+    .dashboard-head h2{margin:0;font-size:24px;color:var(--text)}
+    .dashboard-head p{margin:6px 0 0;color:var(--muted)}
+    .panel{padding:20px;border-radius:24px;background:var(--card);border:1px solid var(--border);box-shadow:var(--shadow)}
+    .action-card{grid-column:span 6}
+    .action-card h3{margin:0 0 8px;font-size:18px;color:var(--text)}
+    .action-card p{margin:0 0 14px;color:var(--muted);line-height:1.6}
+    .summary-row{grid-column:span 12;display:flex;gap:12px;flex-wrap:wrap}
+    .metric{min-width:140px;padding:12px 14px;border-radius:16px;background:var(--bg-soft);border:1px solid var(--border)}
+    .metric-label{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+
+    .flash{padding:12px 14px;border-radius:16px;background:var(--bg-soft);border:1px solid var(--border);color:var(--text)}
+    .flash-error{background:#fff1ed;border-color:#f0c6bb;color:#9e4a34}
+
+    .full-page-loader{position:fixed;inset:0;background:linear-gradient(180deg,var(--bg-soft),var(--bg));display:none;align-items:center;justify-content:center;z-index:9999;opacity:0;transition:opacity .4s ease-out;pointer-events:none}
+    .full-page-loader.active{display:flex;opacity:1;pointer-events:auto}
+    .full-page-loader::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.14;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220"><filter id="g"><feTurbulence type="fractalNoise" baseFrequency="0.82" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23g)" opacity="0.5"/></svg>')}
+    .loader-content{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:20px}
+    .spinner-ring{width:56px;height:56px;border:2px solid transparent;border-top-color:#00F2FF;border-right-color:#00D9FF;border-bottom-color:#425B95;border-left-color:#5A7FBF;border-radius:50%;animation:spin-ring 1.2s linear infinite,breathe-pulse 2s ease-in-out infinite;box-shadow:inset 0 0 12px rgba(0,242,255,.12)}
+    @keyframes spin-ring{to{transform:rotate(360deg)}}
+    @keyframes breathe-pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.08);opacity:.85}}
+    .loader-text{font-size:14px;font-weight:600;color:var(--muted);text-align:center;max-width:280px;line-height:1.5}
+
+    @media (max-width:900px){
+      .hero{min-height:auto;padding-top:28px}
+      .login-card{padding:28px}
+      .login-title{font-size:32px}
+      .action-card{grid-column:span 12}
+    }
+  </style>
+</head>
+<body>
+  <div class="full-page-loader" id="pageLoader">
+    <div class="loader-content">
+      <div class="spinner-ring"></div>
+      <div class="loader-text" id="loaderText">Loading dashboard...</div>
+    </div>
+  </div>
+
+  <main class="shell">
+    <header class="dock">
+      <div class="brand">
+        <strong>Поиск xkcd</strong>
+        <span>Страница с логином</span>
+      </div>
+      <nav class="segmented" aria-label="главная навигация">
+        <a href="/">Поиск</a>
+        <a href="/admin" class="active">Админка</a>
+      </nav>
+    </header>
+
+    {{if .Notice}}<div class="flash" style="margin-top:20px">{{.Notice}}</div>{{end}}
+    {{if .Error}}<div class="flash flash-error" style="margin-top:20px">{{.Error}}</div>{{end}}
+
+    {{if .LoggedIn}}
+    <section class="panel" style="margin-top:24px">
+      <div class="dashboard-head">
+        <div>
+          <p class="login-kicker">Вы вошли</p>
+          <h2>Панель управления</h2>
+          <p>Опции для работы с базой данных</p>
+        </div>
+        <form action="/admin/logout" method="post">
+          <button type="submit" class="btn-primary btn-primary--secondary">Выйти</button>
+        </form>
+      </div>
+
+      <div class="dashboard">
+        <form action="/admin/update" method="post" class="panel action-card">
+          <h3>Обновить</h3>
+          <p>Запустить обновление, которое скачает и проиндексирует новые комиксы.</p>
+          <button type="submit" class="btn-primary">Запустить обновление</button>
+        </form>
+
+        <form action="/admin/drop" method="post" class="panel action-card">
+          <h3>Сбросить</h3>
+          <p>Дропнуть таблицу</p>
+          <button type="submit" class="btn-primary">Сбросить данные</button>
+        </form>
+
+        <div class="summary-row">
+          <div class="metric"><span class="metric-label">Статус</span><strong>{{if .Status}}{{.Status}}{{else}}неизвестно{{end}}</strong></div>
+          {{if .Stats}}
+          <div class="metric"><span class="metric-label">Всего слов</span><strong>{{.Stats.WordsTotal}}</strong></div>
+          <div class="metric"><span class="metric-label">Уникальных слов</span><strong>{{.Stats.WordsUnique}}</strong></div>
+          <div class="metric"><span class="metric-label">Комиксы</span><strong>{{.Stats.ComicsFetched}} / {{.Stats.ComicsTotal}}</strong></div>
+          {{end}}
+        </div>
+      </div>
+    </section>
+    {{else}}
+    <section class="hero">
+      <div class="login-card">
+        <h1 class="login-title">Панель админа</h1>
+        <p class="login-sub">Введите данные для доступа к панели</p>
+
+        <form action="{{.LoginAction}}" method="post">
+          <div class="field">
+            <label for="name">Имя</label>
+            <input name="name" id="name" autocomplete="username" placeholder="admin" required>
+          </div>
+          <div class="field">
+            <label for="password">Пароль</label>
+            <input name="password" id="password" type="password" autocomplete="current-password" placeholder="password" required>
+          </div>
+          <div class="login-actions">
+            <button type="submit" class="btn-primary">Войти</button>
+          </div>
+        </form>
+      </div>
+    </section>
+    {{end}}
+  </main>
+
+  <script>
+    const LoaderManager = (() => {
+      const MIN_DISPLAY_TIME = 500;
+      let loaderStartTime = 0;
+      let isLoadingActive = false;
+
+      const loader = document.getElementById('pageLoader');
+      const loaderText = document.getElementById('loaderText');
+
+      const show = (text = 'Loading dashboard...') => {
+        if (!loader) return;
+        loaderStartTime = Date.now();
+        isLoadingActive = true;
+        loaderText.textContent = text;
+        loader.classList.add('active');
+      };
+
+      const hide = () => {
+        if (!loader || !isLoadingActive) return;
+        
+        const elapsed = Date.now() - loaderStartTime;
+        const remaining = Math.max(0, MIN_DISPLAY_TIME - elapsed);
+
+        setTimeout(() => {
+          loader.classList.remove('active');
+          isLoadingActive = false;
+        }, remaining);
+      };
+
+      return { show, hide };
+    })();
+
+    document.addEventListener('submit', (e) => {
+      const form = e.target;
+      if (form.action.includes('/admin') && !form.action.includes('/logout')) {
+        const message = form.action.includes('/login') 
+          ? 'Verifying credentials...' 
+          : 'Processing request...';
+        LoaderManager.show(message);
+      }
+    });
+
+    window.addEventListener('beforeunload', () => {
+      LoaderManager.hide();
+    });
+
+    window.addEventListener('popstate', () => {
+      LoaderManager.show('Loading dashboard...');
+      setTimeout(() => LoaderManager.hide(), 600);
+    });
+  </script>
+  <script>
+    (function(){
+      const updateForm = document.querySelector('form[action="/admin/update"]');
+      if (!updateForm) return;
+
+      updateForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        LoaderManager.show('Запуск обновления...');
+        try {
+          const resp = await fetch('/api/db/update', { method: 'POST', credentials: 'same-origin' });
+          if (!resp.ok && resp.status !== 202) {
+            const txt = await resp.text();
+            LoaderManager.hide();
+            alert('Ошибка при запуске обновления: ' + (txt||resp.status));
+            return;
+          }
+
+          const deadline = Date.now() + 1000 * 60 * 10; // 10m
+          const poll = async () => {
+            try {
+              const s = await fetch('/api/db/stats', { method: 'GET', credentials: 'same-origin' });
+              if (!s.ok) return null;
+              const js = await s.json();
+              return js;
+            } catch (err) { return null; }
+          };
+
+          const loop = async () => {
+            while (Date.now() < deadline) {
+              const stats = await poll();
+              if (stats && typeof stats.comics_fetched !== 'undefined' && typeof stats.comics_total !== 'undefined') {
+                if (stats.comics_fetched >= stats.comics_total) {
+                  LoaderManager.hide();
+                  window.location.reload();
+                  return;
+                }
+              }
+              await new Promise(r => setTimeout(r, 1200));
+            }
+            LoaderManager.hide();
+            alert('Обновление заняло слишком много времени, проверьте логи сервиса.');
+          };
+          loop();
+        } catch (err) {
+          console.error('update error', err);
+          LoaderManager.hide();
+          alert('Не удалось запустить обновление'); // i love codex
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
+
+

@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Karambollla/course/api/core"
 	jwt "github.com/golang-jwt/jwt"
 	"github.com/stretchr/testify/require"
+	"github.com/Karambollla/course/api/core"
 )
 
 func newTestAAA(ttl time.Duration) AAA {

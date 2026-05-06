@@ -4,12 +4,12 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/Karambollla/course/api/core"
-	wordspb "github.com/Karambollla/course/proto/words"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
+	"github.com/Karambollla/course/api/core"
+	wordspb "github.com/Karambollla/course/proto/words"
 )
 
 type Client struct {

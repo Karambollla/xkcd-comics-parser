@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{.Title}}</title>
+  <link rel="stylesheet" href="/static/app.css">
+  <style>
+    :root{
+      --bg: #F5F2ED;
+      --bg-soft: #F9F8F5;
+      --card: #FFFFFF;
+      --card-soft: #EAE8E3;
+      --border: #E0DED7;
+      --text: #343541;
+      --muted: #7D7C75;
+      --accent: #F07E5C;
+      --accent-2: #425B95;
+      --shadow: 0 12px 30px rgba(31, 28, 22, 0.08);
+      --radius-xl: 24px;
+      --radius-lg: 18px;
+      --radius-md: 14px;
+    }
+
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg-soft),var(--bg));color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.14;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220"><filter id="g"><feTurbulence type="fractalNoise" baseFrequency="0.82" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23g)" opacity="0.5"/></svg>')}
+    .shell{max-width:1200px;margin:0 auto;padding:28px 24px 48px;position:relative;z-index:1}
+
+    .dock{position:sticky;top:18px;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 16px;border-radius:999px;background:rgba(255,255,255,.72);backdrop-filter:blur(18px);border:1px solid rgba(224,222,215,.9);box-shadow:var(--shadow)}
+    .brand{display:flex;flex-direction:column;gap:2px}
+    .brand strong{font-size:16px;letter-spacing:.01em}
+    .brand span{font-size:12px;color:var(--muted)}
+    .segmented{display:inline-flex;align-items:center;padding:4px;border-radius:999px;background:var(--bg-soft);border:1px solid var(--border);gap:4px}
+    .segmented a{min-height:44px;display:inline-flex;align-items:center;justify-content:center;padding:0 16px;border-radius:999px;color:var(--muted);text-decoration:none;font-weight:600;transition:all .18s ease}
+    .segmented a.active{background:var(--card);color:var(--text);box-shadow:0 6px 16px rgba(31,28,22,.06)}
+
+    .hero{min-height:52vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 0 16px}
+    .hero-copy{text-align:center;max-width:780px}
+    h1{margin:0;font-size:56px;line-height:1.02;letter-spacing:-.03em;font-weight:700;color:var(--text)}
+    .lede{max-width:640px;margin:14px auto 0;color:var(--muted);font-size:16px;line-height:1.6}
+
+    .search-wrap{width:100%;max-width:860px;margin-top:28px}
+    .search-card{display:flex;gap:12px;align-items:stretch;padding:16px;background:var(--card);border:1px solid var(--border);border-radius:28px;box-shadow:var(--shadow)}
+    .field{position:relative;flex:1;min-width:0}
+    .field--limit{flex:0 0 148px}
+    .field input{width:100%;box-sizing:border-box;min-height:56px;padding:24px 16px 12px;border-radius:16px;background:#fff;border:1px solid var(--border);color:var(--text);font-size:15px;transition:border-color .18s ease,box-shadow .18s ease}
+    .field input:focus{outline:none;border-color:rgba(64,91,149,.36);box-shadow:0 0 0 4px rgba(64,91,149,.08)}
+    .field label{position:absolute;left:16px;top:18px;font-size:12px;color:var(--muted);pointer-events:none;transition:transform .16s ease,font-size .16s ease,color .16s ease}
+    .field input:not(:placeholder-shown)+label,.field input.filled+label{transform:translateY(-10px);font-size:11px;color:var(--accent-2)}
+    .search-btn{min-width:132px;min-height:56px;padding:0 18px;border:none;border-radius:16px;background:var(--accent);color:#fff;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 10px 22px rgba(240,126,92,.18);cursor:pointer;transition:transform .18s ease,box-shadow .18s ease}
+    .search-btn:hover{transform:translateY(-1px);box-shadow:0 12px 26px rgba(240,126,92,.22)}
+    .search-btn svg{width:18px;height:18px}
+
+    .panel{margin-top:28px;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:28px;box-shadow:var(--shadow)}
+    .flash{padding:12px 14px;border-radius:14px;background:var(--bg-soft);border:1px solid var(--border);color:var(--text)}
+    .flash-error{background:#fff1ed;border-color:#f0c6bb;color:#9e4a34}
+
+    .summary-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}
+    .metric{min-width:120px;padding:12px 14px;border-radius:16px;background:var(--bg-soft);border:1px solid var(--border)}
+    .metric-label{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+    .metric strong{color:var(--text)}
+
+    .results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-top:18px}
+    .comic-card{overflow:hidden;border-radius:20px;background:var(--card);border:1px solid var(--border);box-shadow:0 10px 22px rgba(31,28,22,.06);cursor:pointer}
+    .comic-preview{height:190px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#fff,#f7f6f2)}
+    .comic-preview img{max-width:100%;max-height:100%;display:block}
+    .comic-meta{padding:12px 14px;display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px}
+
+    .empty-state{padding:28px;text-align:center;color:var(--muted)}
+
+    .comic-lightbox{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(20,20,20,.55);z-index:1200}
+    .comic-lightbox[hidden]{display:none}
+    .comic-lightbox-content{max-width:92vw;max-height:92vh;margin:0}
+    .comic-lightbox-content img{max-width:90vw;max-height:80vh;display:block;border-radius:18px;box-shadow:0 18px 40px rgba(0,0,0,.35)}
+    .comic-lightbox-close{position:absolute;top:24px;right:24px;min-height:44px;padding:0 14px;border-radius:999px;background:rgba(255,255,255,.92);border:1px solid rgba(224,222,215,.9);color:var(--text);cursor:pointer}
+
+    /* Full-Page Loader Styles */
+    .full-page-loader{position:fixed;inset:0;background:linear-gradient(180deg,var(--bg-soft),var(--bg));display:none;align-items:center;justify-content:center;z-index:9999;opacity:0;transition:opacity .4s ease-out;pointer-events:none}
+    .full-page-loader.active{display:flex;opacity:1;pointer-events:auto}
+    .full-page-loader::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.14;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220"><filter id="g"><feTurbulence type="fractalNoise" baseFrequency="0.82" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23g)" opacity="0.5"/></svg>')}
+    .loader-content{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:20px}
+    .spinner-ring{width:56px;height:56px;border:2px solid transparent;border-top-color:#00F2FF;border-right-color:#00D9FF;border-bottom-color:#425B95;border-left-color:#5A7FBF;border-radius:50%;animation:spin-ring 1.2s linear infinite,breathe-pulse 2s ease-in-out infinite;box-shadow:inset 0 0 12px rgba(0,242,255,.12)}
+    @keyframes spin-ring{to{transform:rotate(360deg)}}
+    @keyframes breathe-pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.08);opacity:.85}}
+    .loader-text{font-size:14px;font-weight:600;color:var(--muted);text-align:center;max-width:280px;line-height:1.5}
+
+    @media (max-width:860px){
+      .dock{border-radius:22px;flex-direction:column;align-items:flex-start}
+      .hero{min-height:auto;padding-top:28px}
+      h1{font-size:42px}
+      .search-card{flex-direction:column;border-radius:24px}
+      .field--limit{flex:1}
+      .search-btn{width:100%}
+    }
+  </style>
+</head>
+<body class="{{if .Phrase}}search-active{{end}}">
+  <div class="full-page-loader" id="pageLoader">
+    <div class="loader-content">
+      <div class="spinner-ring"></div>
+      <div class="loader-text" id="loaderText">Searching the xkcd archives...</div>
+    </div>
+  </div>
+
+  <main class="shell">
+    <header class="dock">
+      <div class="brand">
+        <strong>Поиск xkcd</strong>
+        <span>Главная страница</span>
+      </div>
+      <nav class="segmented" aria-label="главная навигация">
+        <a href="/" class="active">Поиск</a>
+        <a href="/admin">Админка</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="hero-copy">
+        <h1>Поиск комиксов xkcd</h1>
+        <p class="lede">Интерфейс для поиска комиксов по фразе</p>
+      </div>
+
+      <div class="search-wrap">
+        <form method="get" action="/" class="search-card">
+          <div class="field">
+            <input name="phrase" value="{{.Phrase}}">
+            <label>Фраза</label>
+          </div>
+          <div class="field field--limit">
+            <input name="limit" type="number" min="1" value="{{.Limit}}">
+            <label>Лимит</label>
+          </div>
+          <button type="submit" class="search-btn">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="2"/><path d="m16.5 16.5 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Поиск
+          </button>
+        </form>
+      </div>
+
+    </section>
+
+    {{if or .Results .Error .Notice}}
+    <section class="panel">
+      {{if .Error}}<div class="flash flash-error">{{.Error}}</div>{{end}}
+      {{if .Notice}}<div class="flash" style="margin-top:12px">{{.Notice}}</div>{{end}}
+
+      {{if .Results}}
+      <section class="results-grid">
+        {{range .Results}}
+        <article class="comic-card comic-card-clickable" role="button" tabindex="0" data-comic-url="{{.URL}}" data-comic-id="{{.ID}}">
+          <div class="comic-preview"><img src="{{.URL}}" alt="комикс {{.ID}}"></div>
+          <div class="comic-meta"><span>#{{.ID}}</span><strong>Оценка {{.Score}}</strong></div>
+        </article>
+        {{end}}
+      </section>
+      {{end}}
+    </section>
+    {{end}}
+
+    <div class="comic-lightbox" id="comicLightbox" hidden>
+      <button class="comic-lightbox-close" type="button" aria-label="Закрыть">x</button>
+      <figure class="comic-lightbox-content">
+        <img id="comicLightboxImage" src="" alt="увеличенный комикс">
+        <figcaption id="comicLightboxCaption"></figcaption>
+      </figure>
+    </div>
+  </main>
+
+  <script>
+    (() => {
+      document.querySelectorAll('.search-card input').forEach((input) => {
+        const sync = () => {
+          if (input.value && input.value.trim() !== '') input.classList.add('filled'); else input.classList.remove('filled');
+        };
+        input.addEventListener('input', sync);
+        sync();
+      });
+
+      const lightbox = document.getElementById('comicLightbox');
+      const image = document.getElementById('comicLightboxImage');
+      const caption = document.getElementById('comicLightboxCaption');
+      const closeButton = document.querySelector('.comic-lightbox-close');
+
+      const openLightbox = (url, id) => {
+        if (!lightbox) return;
+        image.src = url;
+        image.alt = `комикс ${id}`;
+        caption.textContent = `Комикс #${id}`;
+        lightbox.hidden = false;
+      };
+
+      const closeLightbox = () => {
+        if (!lightbox) return;
+        lightbox.hidden = true;
+        image.src = '';
+        caption.textContent = '';
+      };
+
+      document.addEventListener('click', (e) => {
+        const card = e.target.closest('.comic-card-clickable');
+        if (card) {
+          openLightbox(card.dataset.comicUrl, card.dataset.comicId);
+        }
+      });
+      if (closeButton) closeButton.addEventListener('click', closeLightbox);
+      if (lightbox) lightbox.addEventListener('click', (event) => { if (event.target === lightbox) closeLightbox(); });
+      window.addEventListener('keydown', (event) => { if (event.key === 'Escape' && lightbox && !lightbox.hidden) closeLightbox(); });
+    })();
+  </script>
+
+  <script>
+    const LoaderManager = (() => {
+      const MIN_DISPLAY_TIME = 500;
+      let loaderStartTime = 0;
+      let isLoadingActive = false;
+      const loader = document.getElementById('pageLoader');
+      const loaderText = document.getElementById('loaderText');
+
+      function now() { return Date.now(); }
+
+      const show = (text = 'Searching the xkcd archives...') => {
+        if (!loader) return;
+        loaderStartTime = now();
+        isLoadingActive = true;
+        if (loaderText) loaderText.textContent = text;
+        loader.classList.add('active');
+      };
+
+      const hide = () => {
+        if (!loader || !isLoadingActive) return;
+        const elapsed = now() - loaderStartTime;
+        const remaining = Math.max(0, MIN_DISPLAY_TIME - elapsed);
+        setTimeout(() => {
+          loader.classList.remove('active');
+          isLoadingActive = false;
+        }, remaining);
+      };
+
+      return { show, hide };
+    })();
+
+    (function () {
+      const form = document.querySelector('.search-card');
+      const resultsContainerSelector = '.results-grid';
+      const panelSelector = '.panel';
+
+      function renderResults(data) {
+        const panel = document.querySelector(panelSelector) || (function(){
+          const sec = document.createElement('section'); sec.className='panel'; document.querySelector('main.shell').appendChild(sec); return sec; })();
+        panel.innerHTML = '';
+        if (data.error) {
+          const div = document.createElement('div'); div.className='flash flash-error'; div.textContent = data.error; panel.appendChild(div); return;
+        }
+        if (!data.comics || data.total === 0) {
+          const div = document.createElement('div'); div.className='flash'; div.textContent = 'Комиксов не найдено'; panel.appendChild(div); return;
+        }
+
+        const grid = document.createElement('section'); grid.className = 'results-grid';
+        data.comics.forEach(c => {
+          const art = document.createElement('article'); art.className = 'comic-card comic-card-clickable'; art.setAttribute('role','button'); art.tabIndex = 0;
+          art.dataset.comicUrl = c.url; art.dataset.comicId = c.id;
+          art.innerHTML = `<div class="comic-preview"><img src="${c.url}" alt="комикс ${c.id}"></div><div class="comic-meta"><span>#${c.id}</span><strong>Оценка ${c.score}</strong></div>`;
+          grid.appendChild(art);
+        });
+        panel.appendChild(grid);
+      }
+
+      if (!form) return;
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const phrase = form.querySelector('input[name="phrase"]').value.trim();
+        const limitInput = form.querySelector('input[name="limit"]');
+        const limit = limitInput && limitInput.value ? limitInput.value : '';
+        if (!phrase) {
+          const panel = document.querySelector('.panel') || document.createElement('section');
+          if (!panel.parentNode) { panel.className='panel'; document.querySelector('main.shell').appendChild(panel); }
+          panel.innerHTML = '<div class="flash flash-error">Пожалуйста, введите фразу для поиска</div>';
+          return;
+        }
+
+        try {
+          LoaderManager.show('Searching the xkcd archives...');
+          const params = new URLSearchParams({ phrase }); if (limit) params.set('limit', limit);
+          const resp = await fetch('/api/search?' + params.toString(), { method: 'GET', headers: { 'Accept': 'application/json' } });
+          if (!resp.ok) {
+            const text = await resp.text();
+            renderResults({ error: text || 'Ошибка поиска' });
+            return;
+          }
+          const json = await resp.json();
+          const normalizeComic = (c) => {
+            const id = c.id ?? c.ID ?? c.Id ?? null;
+            const url = c.url ?? c.URL ?? c.Url ?? c.uRL ?? null;
+            const score = c.score ?? c.Score ?? 0;
+            return { id, url, score };
+          };
+          const comics = (json.comics || json.Comics || []).map(normalizeComic).filter(c => c && c.id && c.url);
+          const total = json.total ?? json.Total ?? 0;
+          const data = { comics, total };
+          renderResults(data);
+        } catch (err) {
+          console.error('search error', err);
+          renderResults({ error: 'Ошибка при выполнении поиска' });
+        } finally {
+          LoaderManager.hide();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

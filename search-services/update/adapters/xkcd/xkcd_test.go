@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Karambollla/course/update/core"
 	"github.com/stretchr/testify/require"
+	"github.com/Karambollla/course/update/core"
 )
 
 type roundTripFunc func(*http.Request) (*http.Response, error)

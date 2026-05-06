@@ -1,72 +1,44 @@
-# xkcd comics parser
+# 🚀 XKCD Comics Parser
 
-### Приложение для поиска комиксов xkcd по словам. Состоит из микросервисов нормализации, поиска и обновления данных. Использует gRPC для взаимодействия между сервисами, PostgreSQL для хранения данных, VictoriaMetrics для метрик и Docker Compose для оркестрации.
-### Использует архитектуру ports&adapters
-## TODO
+<div align="center">
 
-- ~~Микросервис нормализации~~
-- ~~Микросервис поиска~~
-- ~~Добавить БД~~
-- ~~Добавить миддлвары~~
-- ~~Добавить метрики~~
-- ~~Покрыть тестами~~
-- Добавить фронтенд
-- ~~Добавить шину событий NATS~~
+![Go](https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white)
+![gRPC](https://img.shields.io/badge/gRPC-4285F4?style=for-the-badge&logo=google&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Hexagonal Architecture](https://img.shields.io/badge/Architecture-Hexagonal-orange?style=for-the-badge)
 
-Кратко: проект парсит комиксы с xkcd по словам (с предварительной нормализацией слов) и возвращает результаты с URL комиксов.
+**Высокопроизводительная микросервисная система для поиска по комиксам xkcd.**  
+Построена на принципах *Clean Architecture* (Ports & Adapters), что гарантирует независимость бизнес-логики от внешних инструментов.
 
-**Make targets** (файл: [Makefile](Makefile))
+</div>
 
-- **up**: Поднимает стек контейнеров.
 
-```sh
-make up
-```
 
-- **down**: Останавливает и удаляет контейнеры.
+<div align="center">
+  <img src="guide.gif" alt="Guide" width="800px">
+</div>
 
-```sh
-make down
-```
 
-- **clean**: Останавливает контейнеры и удаляет тома.
 
-```sh
-make clean
-```
+## 🏗 Архитектура
 
-- **run-tests**: Запускает контейнер с тестами.
+Система разделена микросервисы, которые общаются между собой по **gRPC**:
 
-```sh
-make run-tests
-```
+*   **Words Service** — отвечает за нормализацию, токенизацию и лемматизацию входящего текста.
+*   **Search Service** — поисковый движок, выполняющий запросы к индексам в PostgreSQL.
+*   **Update Service** — планировщик, который синхронизирует локальную базу с [xkcd.com](https://xkcd.com).
+*   Также существует опция сборки метрик через VictoriaMetrics.
 
-- **test**: Полный цикл тестирования: чистка, подъем кластера, ожидание, запуск тестов, чистка окружения.
 
-```sh
-make test
-```
+## 🛠 Гайдлайн по Make
 
-- **lint**: Запускает линтеры для сервиса поиска (делегирует в [search-services/Makefile](search-services/Makefile)).
-
-```sh
-make lint
-```
-
-- **proto**: Генерация protobuf в `search-services`.
-
-```sh
-make proto
-```
-
-- **tools**: Устанавливает полезные dev-инструменты (protolint, goimports, protoc-gen-go, grpcurl и т.д.).
-
-```sh
-make tools
-```
-- Перед запуском `make test` убедитесь, что порты и среда свободны (тесты поднимают локальные сервисы).
-
-Структура и важные файлы:
-
-- Основной `Makefile`: [Makefile](Makefile)
-- Сервис поиска: [search-services](search-services/)
+| Категория | Команда | Описание |
+| :--- | :--- | :--- |
+| **Инфраструктура** | `make up` | Поднять весь стек (Docker Compose) |
+| | `make down` | Остановить все контейнеры |
+| | `make clean` | Полная очистка: удаление контейнеров и томов БД |
+| **Тесты** | `make test` | Полный CI-цикл: очистка → деплой → тесты → очистка |
+| **Инструменты** | `make proto` | Перегенерация gRPC кода из `.proto` |
+| | `make lint` | Проверка кода линтерами |
+| | `make tools` | Установка dev-зависимостей (`protoc-gen-go` и др.) |

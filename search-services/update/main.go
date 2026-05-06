@@ -10,6 +10,8 @@ import (
 	"os"
 	"os/signal"
 
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 	updatepb "github.com/Karambollla/course/proto/update"
 	"github.com/Karambollla/course/update/adapters/db"
 	"github.com/Karambollla/course/update/adapters/events"
@@ -18,8 +20,6 @@ import (
 	"github.com/Karambollla/course/update/adapters/xkcd"
 	"github.com/Karambollla/course/update/config"
 	"github.com/Karambollla/course/update/core"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 )
 
 func CloseOrLog(c io.Closer, log *slog.Logger) {

@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/Karambollla/course/api/core"
 	"github.com/VictoriaMetrics/metrics"
+	"github.com/Karambollla/course/api/core"
 )
 
 type PingResponse struct {

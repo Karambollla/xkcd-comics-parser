@@ -14,7 +14,7 @@ services:
     environment:
       - ADMIN_USER=admin
       - ADMIN_PASSWORD=password
-      - TOKEN_TTL=2m
+      - TOKEN_TTL=1m
       - API_ADDRESS=:8080
       - WORDS_ADDRESS=words:8080
       - UPDATE_ADDRESS=update:8080
@@ -82,6 +82,7 @@ services:
       - WORDS_ADDRESS=words:8080
       - DB_ADDRESS=postgres://postgres:password@postgres:5432/postgres
       - BROKER_ADDRESS=nats://nats:4222
+      - INDEX_TTL=20s
     depends_on:
       postgres:
         condition: service_healthy
@@ -137,33 +138,6 @@ services:
     ports:
       - "4222:4222"
 
-  victoriametrics:
-    image: victoriametrics/victoria-metrics:v1.125.0
-    container_name: victoriametrics
-    ports:
-      - 8428:8428
-    volumes:
-      - vmdata:/storage
-      - ./metrics/promscrape.yml:/etc/promscrape.yml
-    command:
-      - "--storageDataPath=/storage"
-      - "--httpListenAddr=:8428"
-      - "--promscrape.config=/etc/promscrape.yml"
-    restart: unless-stopped
-
-  grafana:
-    image: grafana/grafana:12.2.0
-    container_name: grafana
-    depends_on:
-      - "victoriametrics"
-    ports:
-      - 3000:3000
-    volumes:
-      - grafanadata:/var/lib/grafana
-    restart: unless-stopped
-
 volumes:
   postgres:
   pgadmin:
-  vmdata:
-  grafanadata:

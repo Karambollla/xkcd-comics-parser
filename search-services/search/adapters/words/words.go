@@ -4,9 +4,9 @@ import (
 	"context"
 	"log/slog"
 
-	wordspb "github.com/Karambollla/course/proto/words"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	wordspb "github.com/Karambollla/course/proto/words"
 )
 
 type Client struct {

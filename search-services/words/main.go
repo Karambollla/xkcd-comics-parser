@@ -9,14 +9,14 @@ import (
 	"os"
 	"strconv"
 
-	wordspb "github.com/Karambollla/course/proto/words"
-	"github.com/Karambollla/course/words/words"
 	"github.com/ilyakaznacheev/cleanenv"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
+	wordspb "github.com/Karambollla/course/proto/words"
+	"github.com/Karambollla/course/words/words"
 )
 
 const maxPhraseLen = 20000

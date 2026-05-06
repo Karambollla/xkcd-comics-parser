@@ -70,6 +70,14 @@ func main() {
 		"search": searchClient,
 	}
 
+	mux.Handle("GET /", rest.NewSearchPageHandler(log, searchClient))
+	mux.Handle("GET /static/", rest.NewStaticHandler())
+	mux.Handle("GET /admin", rest.NewAdminPageHandler(log, AAA, updateClient))
+	mux.Handle("POST /admin/login", rest.NewAdminLoginHandler(log, AAA))
+	mux.Handle("POST /admin/logout", rest.NewAdminLogoutHandler())
+	mux.Handle("POST /admin/update", middleware.Auth(rest.NewAdminUpdateHandler(log, updateClient), AAA))
+	mux.Handle("POST /admin/drop", middleware.Auth(rest.NewAdminDropHandler(log, updateClient), AAA))
+
 	mux.Handle("GET /metrics", rest.NewMetricsHandler())
 	mux.Handle("POST /api/login", rest.NewLoginHandler(log, AAA))
 
