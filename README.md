@@ -1,4 +1,4 @@
-# 🚀 XKCD Comics Parser
+# XKCD Comics Parser
 
 <div align="center">
 
@@ -8,7 +8,7 @@
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![Hexagonal Architecture](https://img.shields.io/badge/Architecture-Hexagonal-orange?style=for-the-badge)
 
-**Высокопроизводительная микросервисная система для поиска по комиксам xkcd.**  
+**Микросервисная система для поиска по комиксам xkcd.**  
 Построена на принципах *Clean Architecture* (Ports & Adapters), что гарантирует независимость бизнес-логики от внешних инструментов.
 
 </div>
@@ -21,17 +21,17 @@
 
 
 
-## 🏗 Архитектура
+## Архитектура
 
 Система разделена микросервисы, которые общаются между собой по **gRPC**:
 
-*   **Words Service** — отвечает за нормализацию, токенизацию и лемматизацию входящего текста.
-*   **Search Service** — поисковый движок, выполняющий запросы к индексам в PostgreSQL.
-*   **Update Service** — планировщик, который синхронизирует локальную базу с [xkcd.com](https://xkcd.com).
+*   **Words Service** — нормализация входящей фразы.
+*   **Search Service** — поиск по бд/индексу.
+*   **Update Service** — обновляет базу в соответствии с [xkcd.com](https://xkcd.com).
 *   Также существует опция сборки метрик через VictoriaMetrics.
 
 
-## 🛠 Гайдлайн по Make
+## Гайдлайн по Make
 
 | Категория | Команда | Описание |
 | :--- | :--- | :--- |
