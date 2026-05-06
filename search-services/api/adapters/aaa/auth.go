@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/Karambollla/course/api/core"
 	jwt "github.com/golang-jwt/jwt"
+	"github.com/Karambollla/course/api/core"
 )
 
 const secretKey = "something secret here" // token sign key

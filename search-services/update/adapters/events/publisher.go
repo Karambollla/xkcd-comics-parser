@@ -5,8 +5,8 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/Karambollla/course/update/core"
 	"github.com/nats-io/nats.go"
+	"github.com/Karambollla/course/update/core"
 )
 
 const (

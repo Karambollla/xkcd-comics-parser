@@ -4,10 +4,10 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/Karambollla/course/search/core"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
+	"github.com/Karambollla/course/search/core"
 )
 
 type DB struct {

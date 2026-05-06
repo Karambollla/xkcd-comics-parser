@@ -3,11 +3,11 @@ package grpc
 import (
 	"context"
 
-	updatepb "github.com/Karambollla/course/proto/update"
-	"github.com/Karambollla/course/update/core"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
+	updatepb "github.com/Karambollla/course/proto/update"
+	"github.com/Karambollla/course/update/core"
 )
 
 func NewServer(service core.Updater) *Server {

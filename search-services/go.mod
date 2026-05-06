@@ -3,12 +3,9 @@ module github.com/Karambollla/course
 go 1.25.1
 
 require (
-	github.com/VictoriaMetrics/metrics v1.43.1
+	github.com/kljensen/snowball v0.10.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
-	github.com/lib/pq v1.10.9
-	github.com/nats-io/nats.go v1.51.0
-	github.com/stretchr/testify v1.11.1
-	go.uber.org/ratelimit v0.3.1
+	github.com/stretchr/testify v1.9.0
 	google.golang.org/grpc v1.69.2
 	google.golang.org/protobuf v1.35.1
 )
@@ -43,12 +40,16 @@ require (
 )
 
 require (
+	github.com/VictoriaMetrics/metrics v1.43.2
+	github.com/felixge/httpsnoop v1.0.4
 	github.com/golang-migrate/migrate/v4 v4.18.1
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/jackc/pgx/v4 v4.18.3 // indirect
 	github.com/jackc/pgx/v5 v5.7.2
 	github.com/jmoiron/sqlx v1.4.0
-	github.com/kljensen/snowball v0.10.0
+	github.com/lib/pq v1.10.9
+	github.com/nats-io/nats.go v1.51.0
+	go.uber.org/ratelimit v0.3.1
 	golang.org/x/net v0.51.0 // indirect
 	golang.org/x/sys v0.42.0 // indirect
 	golang.org/x/text v0.35.0 // indirect

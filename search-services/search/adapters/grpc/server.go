@@ -3,9 +3,9 @@ package grpc
 import (
 	"context"
 
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	searchpb "github.com/Karambollla/course/proto/search"
 	"github.com/Karambollla/course/search/core"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 func NewServer(svc core.Searcher) *Server {

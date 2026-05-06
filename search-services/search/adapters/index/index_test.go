@@ -7,8 +7,8 @@ import (
 	"log/slog"
 	"testing"
 
-	"github.com/Karambollla/course/search/core"
 	"github.com/stretchr/testify/require"
+	"github.com/Karambollla/course/search/core"
 )
 
 type fakeDB struct {

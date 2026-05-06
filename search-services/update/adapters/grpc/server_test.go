@@ -5,12 +5,12 @@ import (
 	"errors"
 	"testing"
 
-	updatepb "github.com/Karambollla/course/proto/update"
-	"github.com/Karambollla/course/update/core"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
+	updatepb "github.com/Karambollla/course/proto/update"
+	"github.com/Karambollla/course/update/core"
 )
 
 type fakeUpdater struct {

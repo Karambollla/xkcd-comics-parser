@@ -33,6 +33,7 @@ func NewService(
 	if publisher == nil {
 		return nil, fmt.Errorf("event publisher must not be nil")
 	}
+
 	return &Service{
 		log:         log,
 		db:          db,

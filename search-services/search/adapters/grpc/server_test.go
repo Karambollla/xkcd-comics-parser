@@ -5,10 +5,10 @@ import (
 	"errors"
 	"testing"
 
-	searchpb "github.com/Karambollla/course/proto/search"
-	"github.com/Karambollla/course/search/core"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/emptypb"
+	searchpb "github.com/Karambollla/course/proto/search"
+	"github.com/Karambollla/course/search/core"
 )
 
 type fakeSearcher struct {

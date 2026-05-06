@@ -11,8 +11,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/Karambollla/course/api/core"
 	"github.com/stretchr/testify/require"
+	"github.com/Karambollla/course/api/core"
 )
 
 type fakeAuth struct {

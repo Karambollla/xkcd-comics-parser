@@ -64,7 +64,7 @@ func run(cfg config.Config, log *slog.Logger) error {
 	// events subscriber
 	subscriber, err := events.NewSubscriber(cfg.BrokerAddress, svc, log)
 	if err != nil {
-		log.Warn("failed to create events subscriber, continuing without broker", "error", err)
+		return fmt.Errorf("failed to create events subscriber: %w", err)
 	}
 
 	// gRPC server
@@ -77,13 +77,9 @@ func run(cfg config.Config, log *slog.Logger) error {
 	defer CloseOrLog(words)
 	defer CloseOrLog(db)
 	defer func() { _ = idx.Close() }()
-	if subscriber != nil {
-		defer CloseOrLog(subscriber)
-	}
+	defer CloseOrLog(subscriber)
 	go initiator.Start(ctx)
-	if subscriber != nil {
-		go subscriber.Start(ctx)
-	}
+	go subscriber.Start(ctx)
 	go func() {
 		<-ctx.Done()
 		log.Debug("shutting down gRPC server")

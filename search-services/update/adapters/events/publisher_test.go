@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Karambollla/course/update/core"
 	"github.com/stretchr/testify/require"
+	"github.com/Karambollla/course/update/core"
 )
 
 func testLogger() *slog.Logger {
